@@ -1,6 +1,8 @@
-﻿// This script exports extended layer.bounds information to [psd_file_name].lua
+// This script exports extended layer.bounds information to [psd_file_name].lua
 // XML export version by pattesdours
 // Lua export version by Andrey "asfdfdfd" Panchenko
+
+#target photoshop
 
 function docCheck() {
     // ensure that there is at least one document open
@@ -65,7 +67,8 @@ var str ="";
 
 // class using a contructor
 function cLayer(doc, layer) {
-
+        //app.activeDocument.duplicate();
+    
 //this.layerID = Stdlib.getLayerID(doc, layer);
 	this.layerID = getLayerID(doc, layer);
   //alert("layer ID: " + this.layerID);
@@ -162,7 +165,7 @@ function exportBounds(doc, layer, i) {
     */
 // str += str2.toString();
 
-    var layerName = layer.name.replace(" ", "_");
+    var layerName = layer.name.split(" ").join('').split('-').join('').split('.').join('');
     
     var str2 = "        "+layerName + "={\n";
     str2 += "            stack=" + (i-1) + ",\n";
@@ -185,8 +188,10 @@ traverseLayers(app.activeDocument, exportBounds, true);
     var csvFile = new File(mySourceFilePath.toString().match(/([^\.]+)/)[1] + app.activeDocument.name.match(/([^\.]+)/)[1] + ".lua");
 // open the file, write the data, then close the file
 csvFile.open('w');
-csvFile.writeln(str + "}");
+str += "    }\n";
+str += "}";
+csvFile.writeln(str);
 csvFile.close();
 preferences.rulerUnits = originalRulerUnits;
 // Confirm that operation has completed
-alert("Operation Complete!" + "\n" + "Layer coordinates were successfully exported to:" + "\n" + "\n" + mySourceFilePath.toString().match(/([^\.]+)/)[1] + app.activeDocument.name.match(/([^\.]+)/)[1] + ".xml");
+alert("Operation Complete!" + "\n" + "Layer coordinates were successfully exported to:" + "\n" + "\n" + mySourceFilePath.toString().match(/([^\.]+)/)[1] + app.activeDocument.name.match(/([^\.]+)/)[1] + ".lua");
